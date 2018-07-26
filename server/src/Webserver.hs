@@ -42,12 +42,9 @@ import Network.WebSockets (Connection, forkPingThread, sendTextData)
 import Servant ((:<|>)((:<|>)), serve, serveDirectoryFileServer)
 import Servant.API.WebSocket (WebSocket)
 import Servant.Client (BaseUrl(BaseUrl), Scheme(Https), ServantError)
-import Servant.Server (Handler, Server)
+import Servant.Server (Server)
 import Webserver.API (Web)
 import Webserver.Types (OverallStatus(Bad, Good, Unknown))
-
-api :: Handler Text
-api = pure "Hello"
 
 type Response = Either ServantError HealthcheckResponse
 
@@ -78,7 +75,7 @@ version = pure $(gitHash)
 
 server :: BroadcastChan In Response -> FilePath -> Server Web
 server broadcaster staticDir =
-  version :<|> api :<|> websocket broadcaster :<|>
+  version :<|> websocket broadcaster :<|>
   serveDirectoryFileServer staticDir
 
 watcher :: BroadcastChan In Response -> IO ()
