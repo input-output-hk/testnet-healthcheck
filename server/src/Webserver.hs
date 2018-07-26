@@ -67,28 +67,31 @@ websocket broadcaster = serveWebsocket
 version :: Applicative m => m Text
 version = pure $(gitHash)
 
+startWatcher :: IO (BroadcastChan In Response)
+startWatcher = do
+  broadcaster <- newBroadcastChan
+  manager <- newManager tlsManagerSettings
+  _ <-
+    forkIO $
+    forever $ do
+      response <- Healthcheck.run manager healthcheckUrl getHealthcheck
+      writeBChan broadcaster response
+      threadDelay 5000000
+  pure broadcaster
+
 server :: BroadcastChan In Response -> FilePath -> Server Web
 server broadcaster staticDir =
-  version :<|> websocket broadcaster :<|>
-  serveDirectoryFileServer staticDir
-
-watcher :: BroadcastChan In Response -> IO ()
-watcher broadcaster = do
-  manager <- newManager tlsManagerSettings
-  forever $ do
-    response <- Healthcheck.run manager healthcheckUrl getHealthcheck
-    writeBChan broadcaster response
-    threadDelay 5000000
+  version :<|> websocket broadcaster :<|> serveDirectoryFileServer staticDir
 
 app :: BroadcastChan In Response -> FilePath -> Application
 app broadcaster staticDir = do
   middleware $ serve (Proxy :: Proxy Web) (server broadcaster staticDir)
 
 run :: MonadIO m => Settings -> FilePath -> m ()
-run settings staticDir = liftIO $ do
-  broadcaster <- newBroadcastChan
-  forkIO $ Webserver.watcher broadcaster
-  runSettings settings $ Webserver.app broadcaster staticDir
+run settings staticDir =
+  liftIO $ do
+    broadcaster <- startWatcher
+    runSettings settings $ Webserver.app broadcaster staticDir
 
 middleware :: Middleware
 middleware = gzip def . logStdout . simpleCors
