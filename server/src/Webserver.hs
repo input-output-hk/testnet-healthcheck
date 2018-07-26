@@ -56,7 +56,7 @@ websocket :: BroadcastChan In Response -> Server WebSocket
 websocket broadcaster = serveWebsocket
   where
     serveWebsocket :: MonadIO m => Connection -> m ()
-    serveWebsocket connection = do
+    serveWebsocket connection =
       liftIO $ do
         chan <- newBChanListener broadcaster
         forkPingThread connection 10
@@ -84,8 +84,8 @@ server broadcaster staticDir =
   version :<|> websocket broadcaster :<|> serveDirectoryFileServer staticDir
 
 app :: BroadcastChan In Response -> FilePath -> Application
-app broadcaster staticDir = do
-  middleware $ serve (Proxy :: Proxy Web) (server broadcaster staticDir)
+app broadcaster staticDir =
+  middleware . serve (Proxy :: Proxy Web) $ server broadcaster staticDir
 
 run :: MonadIO m => Settings -> FilePath -> m ()
 run settings staticDir =

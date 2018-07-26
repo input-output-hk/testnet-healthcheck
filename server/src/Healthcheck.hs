@@ -24,7 +24,6 @@ import Data.Text (Text)
 import GHC.Generics (Generic)
 import Network.HTTP.Client (Manager)
 import Servant ((:>), Get, JSON)
-import Servant ()
 import Servant.Client
   ( BaseUrl
   , ClientM
