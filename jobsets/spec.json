@@ -10,8 +10,8 @@
     "emailoverride": "",
     "keepnr": 3,
     "inputs": {
-        "src": { "type": "git", "value": "https://github.com/krisajenkins/status-dashboard.git master", "emailresponsible": false },
+        "src": { "type": "git", "value": "https://github.com/input-output-hk/testnet-healthcheck.git master", "emailresponsible": false },
         "nixpkgs": { "type": "git", "value": "https://github.com/NixOS/nixpkgs-channels.git nixos-18.03", "emailresponsible": false },
-        "dashboardPrsJSON": { "type": "githubpulls", "value": "krisajenkins status-dashboard", "emailresponsible": false }
+        "dashboardPrsJSON": { "type": "githubpulls", "value": "input-output-hk testnet-healthcheck", "emailresponsible": false }
     }
 }

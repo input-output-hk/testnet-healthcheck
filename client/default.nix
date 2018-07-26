@@ -1,11 +1,11 @@
 { pkgs ? import <nixpkgs> {}
-, dashboardSrc ? ./.
+, testnetHealthcheckSrc ? ./.
 }:
 
 pkgs.stdenv.mkDerivation {
   buildInputs = with pkgs; [ elmPackages.elm ];
-  name = "status-dashboard-client";
-  src = dashboardSrc;
+  name = "testnet-healthcheck-client";
+  src = testnetHealthcheckSrc;
 
   configurePhase = ''
     export HOME="$NIX_BUILD_TOP"

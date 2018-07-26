@@ -1,13 +1,13 @@
 { nixpkgs ? <nixpkgs>
 , declInput ? {
-    uri = "https://github.com/krisajenkins/status-dashboard.git";
+    uri = "https://github.com/input-output-hk/testnet-healthcheck.git";
     rev = "refs/heads/master";
   }
-, dashboardPrsJSON ? ./simple-pr-dummy.json
+, testnetHealthcheckPrsJSON ? ./simple-pr-dummy.json
 }:
 let pkgs = import nixpkgs {};
 
-    dashboardPrs = builtins.fromJSON (builtins.readFile dashboardPrsJSON );
+    testnetHealthcheckPrs = builtins.fromJSON (builtins.readFile dashboardPrsJSON );
 
     mkGitSrc = { repo, branch ? "refs/heads/master", deepClone ? false }: {
       type = "git";
@@ -42,42 +42,42 @@ let pkgs = import nixpkgs {};
       };
     };
 
-    mkDashboardJob = { name, description, dashboardBranch }:
+    mkTestnetHealthcheckJob = { name, description, dashboardBranch }:
       mkJob {
         inherit name description;
-        nixexprpath = "jobsets/release-dashboard.nix";
+        nixexprpath = "jobsets/release-testnet-healthcheck.nix";
         extraInputs = {
-          dashboardSrc = mkGitSrc {
-            repo = "https://github.com/krisajenkins/status-dashboard.git";
-            branch = dashboardBranch;
+          testnetHealthcheckSrc = mkGitSrc {
+            repo = "https://github.com/input-output-hk/testnet-healthcheck.git";
+            branch = testnetHealthcheckBranch;
             deepClone = true;
           };
         };
       };
 
-    dashboardJobsetDefinition = pkgs.lib.listToAttrs (
+    testnetHealthcheckJobsetDefinition = pkgs.lib.listToAttrs (
       [
-        (mkDashboardJob {
+        (mkTestnetHealthcheckJob {
           name = "master";
           description = "master";
-          dashboardBranch = "refs/heads/master";
+          testnetHealthcheckBranch = "refs/heads/master";
         })
       ]
       ++
       (pkgs.lib.mapAttrsToList
         (
           num:
-          info: mkDashboardJob {
-            name = "dashboard-PR-${num}";
+          info: mkTestnetHealthcheckJob {
+            name = "testnetHealthcheck-PR-${num}";
             description = info.title;
-            dashboardBranch = info.head.sha;
+            testnetHealthcheckBranch = info.head.sha;
           }
         )
-        dashboardPrs
+        testnetHealthcheckPrs
       )
     );
 
-    jobsetDefinition = dashboardJobsetDefinition;
+    jobsetDefinition = testnetHealthcheckJobsetDefinition;
 in {
   jobsets = pkgs.runCommand "spec.json" {} ''
     cat <<EOF

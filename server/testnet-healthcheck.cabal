@@ -1,14 +1,8 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
---
--- see: https://github.com/sol/hpack
---
--- hash: 229bbaa8d2453fce7770bc1bdc872304f4361e8fd8dcba357553b9ebc335249b
-
-name:           status-dashboard
+name:           testnet-healthcheck
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/input-output-hk/status-dashboard#readme>
-homepage:       https://github.com/input-output-hk/status-dashboard#readme
-bug-reports:    https://github.com/input-output-hk/status-dashboard/issues
+description:    Please see the README on GitHub at <https://github.com/input-output-hk/testnet-healthcheck#readme>
+homepage:       https://github.com/input-output-hk/testnet-healthcheck#readme
+bug-reports:    https://github.com/input-output-hk/testnet-healthcheck/issues
 copyright:      2018 IOHK
 license:        MIT
 build-type:     Simple
@@ -18,7 +12,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/input-output-hk/status-dashboard
+  location: https://github.com/input-output-hk/testnet-healthcheck
 
 library
   exposed-modules:
@@ -27,7 +21,7 @@ library
       Webserver.API
       Webserver.Types
   other-modules:
-      Paths_status_dashboard
+      Paths_testnet_healthcheck
   hs-source-dirs:
       src
   build-depends:
@@ -59,10 +53,10 @@ library
     , websockets
   default-language: Haskell2010
 
-executable status-dashboard
+executable testnet-healthcheck
   main-is: Main.hs
   other-modules:
-      Paths_status_dashboard
+      Paths_testnet_healthcheck
   hs-source-dirs:
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
@@ -81,7 +75,7 @@ executable status-dashboard
     , servant-client
     , servant-server
     , servant-websockets
-    , status-dashboard
+    , testnet-healthcheck
     , text
     , transformers
     , wai
@@ -91,13 +85,13 @@ executable status-dashboard
     , websockets
   default-language: Haskell2010
 
-test-suite status-dashboard-test
+test-suite testnet-healthcheck-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
       HealthcheckSpec
       WebserverSpec
-      Paths_status_dashboard
+      Paths_testnet_healthcheck
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
@@ -114,7 +108,7 @@ test-suite status-dashboard-test
     , servant-client
     , servant-server
     , servant-websockets
-    , status-dashboard
+    , testnet-healthcheck
     , text
     , transformers
     , wai

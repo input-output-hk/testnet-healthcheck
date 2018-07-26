@@ -4,7 +4,7 @@
 
 { pkgs ? (import <nixpkgs> {})
 , compiler ? pkgs.haskell.packages.ghc822
-, dashboardSrc
+, testnetHealthcheckSrc
 }:
 
 with pkgs.haskell.lib;
@@ -33991,16 +33991,16 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            description = "A library of statistical types, data, and functions";
            license = stdenv.lib.licenses.bsd2;
          }) {};
-      "status-dashboard" = callPackage
+      "testnet-healthcheck" = callPackage
         ({ mkDerivation, aeson, base, broadcast-chan, data-default-class, gitrev, lens
          , lens-aeson, monad-logger, mtl, optparse-applicative, servant
          , servant-client, servant-server, servant-websockets, stdenv, text
          , transformers, wai, wai-cors, wai-extra, warp, websockets
          }:
          mkDerivation {
-           pname = "status-dashboard";
+           pname = "testnet-healthcheck";
            version = "0.1.0.0";
-           src = dashboardSrc;
+           src = testnetHealthcheckSrc;
            isLibrary = true;
            isExecutable = true;
            libraryHaskellDepends = [
@@ -34017,7 +34017,7 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            ];
            doHaddock = false;
            doCheck = false;
-           homepage = "https://github.com/krisajenkins/status-dashboard#readme";
+           homepage = "https://github.com/input-output-hk/testnet-healthcheck#readme";
            license = stdenv.lib.licenses.bsd3;
          }) {};
       "stb-image-redux" = callPackage

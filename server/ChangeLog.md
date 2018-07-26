@@ -1,3 +1,3 @@
-# Changelog for status-dashboard
+# Changelog for testnet-healthcheck
 
 ## Unreleased changes

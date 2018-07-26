@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> {}
-, dashboardSrc ? ./.
+, testnetHealthcheckSrc ? ./.
 }:
 
 (import ./stack.nix {
-  inherit dashboardSrc pkgs;
-})."status-dashboard"
+  inherit testnetHealthcheckSrc pkgs;
+})."testnet-healthcheck"
