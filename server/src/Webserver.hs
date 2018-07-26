@@ -15,23 +15,17 @@ import Control.Concurrent.BroadcastChan
   , readBChan
   , writeBChan
   )
-import Control.Concurrent.MVar (MVar)
-import Control.Lens ((^.), contains, has, traversed)
+import Control.Lens (has, traversed)
 import Control.Monad (forever)
-import Control.Monad.Except (throwError)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Logger (logDebug, logDebugN, runStderrLoggingT)
-import Data.Aeson (Value(Number), encode, object)
+import Data.Aeson (encode)
 import Data.Default.Class (def)
-import Data.Foldable (for_)
-import Data.Monoid ((<>))
 import Data.Proxy (Proxy(Proxy))
-import Data.Text (Text, pack)
-import qualified Data.Text as Text
+import Data.Text (Text)
 import Development.GitRev (gitHash)
 import Healthcheck (HealthcheckResponse, _Error, checks, getHealthcheck)
 import qualified Healthcheck
-import Network.HTTP.Client (Manager, newManager)
+import Network.HTTP.Client (newManager)
 import Network.HTTP.Client.TLS (tlsManagerSettings)
 import Network.Wai (Application, Middleware)
 import Network.Wai.Handler.Warp (Settings, runSettings)

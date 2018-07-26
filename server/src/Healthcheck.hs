@@ -10,36 +10,26 @@ module Healthcheck where
 import Control.Lens (makeLenses, makePrisms)
 import Data.Aeson
   ( FromJSON
-  , ToJSON
   , (.:)
-  , (.:?)
   , defaultOptions
   , fieldLabelModifier
   , genericParseJSON
-  , object
   , parseJSON
-  , toJSON
-  , withArray
   , withObject
   )
-import Data.Aeson.Types (Parser)
 import Data.List ()
 import Data.Monoid ((<>))
 import Data.Proxy (Proxy(Proxy))
 import Data.Text (Text)
-import qualified Data.Vector as Vector
 import GHC.Generics (Generic)
 import Network.HTTP.Client (Manager)
 import Servant ((:>), Get, JSON)
 import Servant ()
 import Servant.Client
   ( BaseUrl
-  , ClientEnv
   , ClientM
-  , Scheme
   , ServantError
   , client
-  , manager
   , mkClientEnv
   , runClientM
   )
@@ -65,8 +55,8 @@ instance FromJSON Check where
       case status of
         "OK" -> pure $ Ok description
         "ERROR" -> do
-          error <- obj .: "error"
-          pure $ Error error description
+          err <- obj .: "error"
+          pure $ Error err description
         _ -> fail $ "Unknown status: " <> status
 
 newtype ErrorMessage =
