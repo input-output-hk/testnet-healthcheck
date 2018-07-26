@@ -44,6 +44,7 @@ library
     , servant-websockets
     , stm
     , text
+    , time
     , transformers
     , vector
     , wai

@@ -26,6 +26,7 @@ import Network.Wai.Handler.Warp
   )
 import Options.Applicative
   ( Parser
+  , ReadM
   , argument
   , auto
   , customExecParser
@@ -36,6 +37,7 @@ import Options.Applicative
   , info
   , infoOption
   , long
+  , maybeReader
   , metavar
   , option
   , prefs
@@ -45,11 +47,13 @@ import Options.Applicative
   , strOption
   , value
   )
+import Servant.Client (BaseUrl(BaseUrl), parseBaseUrl)
 import qualified Webserver
 
 data Command =
   Run HostPreference
       Int
+      BaseUrl
       FilePath
   deriving (Show, Eq)
 
@@ -67,12 +71,15 @@ commandParser =
     auto
     (short 'p' <> long "port" <> help "Webserver port number" <> showDefault <>
      value 8080) <*>
+  option
+    (maybeReader parseBaseUrl :: ReadM BaseUrl)
+    (short 's' <> long "server" <> help "Backend API server to monitor") <*>
   argument str (metavar "STATIC_DIR" <> help "Static directory to serve up")
 
 runCommand :: (MonadIO m, MonadLogger m) => Command -> m ()
-runCommand (Run host port staticDir) = do
+runCommand (Run host port healthcheckBaseUrl staticDir) = do
   logInfoN . Text.pack $ "Running on " <> show host <> ":" <> show port
-  Webserver.run settings staticDir
+  Webserver.run settings healthcheckBaseUrl staticDir
   where
     settings = setHost host . setPort port $ defaultSettings
 
