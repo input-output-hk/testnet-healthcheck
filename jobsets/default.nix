@@ -7,7 +7,7 @@
 }:
 let pkgs = import nixpkgs {};
 
-    testnetHealthcheckPrs = builtins.fromJSON (builtins.readFile dashboardPrsJSON );
+    testnetHealthcheckPrs = builtins.fromJSON (builtins.readFile testnetHealthcheckPrsJSON );
 
     mkGitSrc = { repo, branch ? "refs/heads/master", deepClone ? false }: {
       type = "git";
@@ -42,7 +42,7 @@ let pkgs = import nixpkgs {};
       };
     };
 
-    mkTestnetHealthcheckJob = { name, description, dashboardBranch }:
+    mkTestnetHealthcheckJob = { name, description, testnetHealthcheckBranch }:
       mkJob {
         inherit name description;
         nixexprpath = "jobsets/release-testnet-healthcheck.nix";
