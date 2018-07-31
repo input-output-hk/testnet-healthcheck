@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ApplicativeDo #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -50,38 +52,42 @@ import Options.Applicative
 import Servant.Client (BaseUrl(BaseUrl), parseBaseUrl)
 import qualified Webserver
 
-data Command =
-  Run HostPreference
-      Int
-      BaseUrl
-      FilePath
-  deriving (Show, Eq)
+data Command = RunWebserver
+  { _host :: HostPreference
+  , _port :: Int
+  , _healthcheckBaseUrl :: BaseUrl
+  , _staticDir :: FilePath
+  } deriving (Show, Eq)
 
 versionOption :: Parser (a -> a)
 versionOption =
   infoOption $(gitHash) (short 'v' <> long "version" <> help "Show the version")
 
 commandParser :: Parser Command
-commandParser =
-  Run <$>
-  (strOption
-     (short 'b' <> long "bind" <> help "Webserver bind address" <> showDefault <>
-      value "127.0.0.1")) <*>
-  option
-    auto
-    (short 'p' <> long "port" <> help "Webserver port number" <> showDefault <>
-     value 8080) <*>
-  option
-    (maybeReader parseBaseUrl :: ReadM BaseUrl)
-    (short 's' <> long "server" <> help "Backend API server to monitor") <*>
-  argument str (metavar "STATIC_DIR" <> help "Static directory to serve up")
+commandParser = do
+  _host <-
+    strOption
+      (short 'b' <> long "bind" <> help "Webserver bind address" <> showDefault <>
+       value "127.0.0.1")
+  _port <-
+    option
+      auto
+      (short 'p' <> long "port" <> help "Webserver port number" <> showDefault <>
+       value 8080)
+  _healthcheckBaseUrl <-
+    option
+      (maybeReader parseBaseUrl :: ReadM BaseUrl)
+      (short 's' <> long "server" <> help "Backend API server to monitor")
+  _staticDir <-
+    argument str (metavar "STATIC_DIR" <> help "Static directory to serve up")
+  pure RunWebserver {..}
 
 runCommand :: (MonadIO m, MonadLogger m) => Command -> m ()
-runCommand (Run host port healthcheckBaseUrl staticDir) = do
-  logInfoN . Text.pack $ "Running on " <> show host <> ":" <> show port
-  Webserver.run settings healthcheckBaseUrl staticDir
+runCommand RunWebserver {..} = do
+  logInfoN . Text.pack $ "Running on " <> show _host <> ":" <> show _port
+  Webserver.run settings _healthcheckBaseUrl _staticDir
   where
-    settings = setHost host . setPort port $ defaultSettings
+    settings = setHost _host . setPort _port $ defaultSettings
 
 main :: IO ()
 main = do
