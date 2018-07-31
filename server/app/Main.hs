@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ApplicativeDo #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -42,6 +43,7 @@ import Options.Applicative
   , maybeReader
   , metavar
   , option
+  , optional
   , prefs
   , short
   , showDefault
@@ -50,12 +52,14 @@ import Options.Applicative
   , value
   )
 import Servant.Client (BaseUrl(BaseUrl), parseBaseUrl)
+import qualified System.Remote.Monitoring as EKG
 import qualified Webserver
 
 data Command = RunWebserver
   { _host :: HostPreference
   , _port :: Int
   , _healthcheckBaseUrl :: BaseUrl
+  , _ekgPort :: Maybe Int
   , _staticDir :: FilePath
   } deriving (Show, Eq)
 
@@ -78,12 +82,19 @@ commandParser = do
     option
       (maybeReader parseBaseUrl :: ReadM BaseUrl)
       (short 's' <> long "server" <> help "Backend API server to monitor")
+  _ekgPort <-
+    optional
+      (option
+         auto
+         (short 'e' <> long "ekg-port" <> help "EKG monitor port number"))
   _staticDir <-
     argument str (metavar "STATIC_DIR" <> help "Static directory to serve up")
   pure RunWebserver {..}
 
 runCommand :: (MonadIO m, MonadLogger m) => Command -> m ()
 runCommand RunWebserver {..} = do
+  _ :: Maybe EKG.Server <-
+    traverse (liftIO . EKG.forkServer "localhost") _ekgPort
   logInfoN . Text.pack $ "Running on " <> show _host <> ":" <> show _port
   Webserver.run settings _healthcheckBaseUrl _staticDir
   where

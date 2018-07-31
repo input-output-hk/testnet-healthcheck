@@ -30,6 +30,7 @@ library
     , broadcast-chan
     , bytestring
     , data-default-class
+    , ekg
     , gitrev
     , http-client
     , http-client-tls
@@ -60,12 +61,13 @@ executable testnet-healthcheck
       Paths_testnet_healthcheck
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -with-rtsopts=-T
   build-depends:
       aeson
     , base
     , broadcast-chan
     , data-default-class
+    , ekg
     , gitrev
     , lens
     , lens-aeson
@@ -95,7 +97,7 @@ test-suite testnet-healthcheck-test
       Paths_testnet_healthcheck
   hs-source-dirs:
       test
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -with-rtsopts=-T
   build-depends:
       aeson
     , base
