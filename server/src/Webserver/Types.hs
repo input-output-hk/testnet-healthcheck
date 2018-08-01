@@ -5,22 +5,7 @@ module Webserver.Types
   ( OverallStatus(..)
   ) where
 
-import Data.Aeson
-  ( FromJSON
-  , ToJSON
-  , (.:)
-  , (.:?)
-  , defaultOptions
-  , fieldLabelModifier
-  , genericParseJSON
-  , genericToJSON
-  , object
-  , parseJSON
-  , toJSON
-  , withArray
-  , withObject
-  )
-import Data.Aeson.Types (Parser)
+import Data.Aeson (ToJSON, defaultOptions, genericToJSON, object, toJSON)
 import GHC.Generics (Generic)
 
 data OverallStatus

@@ -18,6 +18,7 @@ library
   exposed-modules:
       Healthcheck
       Webserver
+      Riemann
       Webserver.API
       Webserver.Types
   other-modules:
@@ -29,11 +30,13 @@ library
     , base
     , broadcast-chan
     , bytestring
+    , containers
     , data-default-class
     , ekg
     , gitrev
     , http-client
     , http-client-tls
+    , hriemann
     , lens
     , lens-aeson
     , monad-logger
@@ -47,6 +50,7 @@ library
     , text
     , time
     , transformers
+    , unliftio
     , vector
     , wai
     , wai-cors
@@ -66,9 +70,11 @@ executable testnet-healthcheck
       aeson
     , base
     , broadcast-chan
+    , containers
     , data-default-class
     , ekg
     , gitrev
+    , hriemann
     , lens
     , lens-aeson
     , monad-logger
@@ -81,6 +87,7 @@ executable testnet-healthcheck
     , testnet-healthcheck
     , text
     , transformers
+    , unliftio
     , wai
     , wai-cors
     , wai-extra

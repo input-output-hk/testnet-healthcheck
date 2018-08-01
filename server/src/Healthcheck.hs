@@ -8,13 +8,17 @@
 module Healthcheck where
 
 import Control.Lens (makeLenses, makePrisms)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Aeson
   ( FromJSON
+  , ToJSON
   , (.:)
   , defaultOptions
   , fieldLabelModifier
   , genericParseJSON
+  , genericToJSON
   , parseJSON
+  , toJSON
   , withObject
   )
 import Data.List ()
@@ -37,6 +41,9 @@ newtype HealthcheckResponse = HealthcheckResponse
   { _checks :: [Check]
   } deriving (Show, Eq, Generic)
 
+instance ToJSON HealthcheckResponse where
+  toJSON = genericToJSON defaultOptions {fieldLabelModifier = drop 1}
+
 instance FromJSON HealthcheckResponse where
   parseJSON = genericParseJSON defaultOptions {fieldLabelModifier = drop 1}
 
@@ -58,9 +65,12 @@ instance FromJSON Check where
           pure $ Error err description
         _ -> fail $ "Unknown status: " <> status
 
+instance ToJSON Check where
+  toJSON = genericToJSON defaultOptions {fieldLabelModifier = drop 1}
+
 newtype ErrorMessage =
   ErrorMessage Text
-  deriving (Show, Eq, Generic, FromJSON)
+  deriving (Show, Eq, Generic, FromJSON, ToJSON)
 
 makeLenses ''HealthcheckResponse
 
@@ -72,5 +82,5 @@ type MantisAPI = "healthcheck" :> Get '[ JSON] HealthcheckResponse
 getHealthcheck :: ClientM HealthcheckResponse
 getHealthcheck = client (Proxy :: Proxy MantisAPI)
 
-run :: Manager -> BaseUrl -> ClientM a -> IO (Either ServantError a)
-run manager base action = runClientM action $ mkClientEnv manager base
+run :: MonadIO m => Manager -> BaseUrl -> ClientM a -> m (Either ServantError a)
+run manager base action = liftIO $ runClientM action $ mkClientEnv manager base

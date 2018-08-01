@@ -6,24 +6,18 @@
 
 module Main where
 
-import Control.Concurrent (forkIO, threadDelay)
-import Control.Concurrent.BroadcastChan
-  ( BroadcastChan
-  , In
-  , newBChanListener
-  , newBroadcastChan
-  , readBChan
-  , writeBChan
-  )
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Logger (MonadLogger, logInfoN, runStderrLoggingT)
+import Data.Function ((&))
 import Data.Monoid ((<>))
 import qualified Data.Text as Text
 import Development.GitRev (gitHash)
+import qualified Network.Monitoring.Riemann.Client as Riemann
+import qualified Network.Monitoring.Riemann.Event as Riemann
+import qualified Network.Monitoring.Riemann.TCPClient as Riemann
 import Network.Wai.Handler.Warp
   ( HostPreference
   , defaultSettings
-  , runSettings
   , setHost
   , setPort
   )
@@ -51,8 +45,9 @@ import Options.Applicative
   , strOption
   , value
   )
-import Servant.Client (BaseUrl(BaseUrl), parseBaseUrl)
+import Servant.Client (BaseUrl, parseBaseUrl)
 import qualified System.Remote.Monitoring as EKG
+import UnliftIO (MonadUnliftIO)
 import qualified Webserver
 
 data Command = RunWebserver
@@ -72,7 +67,7 @@ commandParser = do
   _host <-
     strOption
       (short 'b' <> long "bind" <> help "Webserver bind address" <> showDefault <>
-       value "127.0.0.1")
+       value "localhost")
   _port <-
     option
       auto
@@ -91,19 +86,26 @@ commandParser = do
     argument str (metavar "STATIC_DIR" <> help "Static directory to serve up")
   pure RunWebserver {..}
 
-runCommand :: (MonadIO m, MonadLogger m) => Command -> m ()
-runCommand RunWebserver {..} = do
+runCommand ::
+     (MonadUnliftIO m, MonadLogger m, Riemann.Client m client)
+  => client
+  -> Command
+  -> m ()
+runCommand riemannClient RunWebserver {..} = do
   _ :: Maybe EKG.Server <-
     traverse (liftIO . EKG.forkServer "localhost") _ekgPort
   logInfoN . Text.pack $ "Running on " <> show _host <> ":" <> show _port
-  Webserver.run settings _healthcheckBaseUrl _staticDir
+  Webserver.run settings riemannClient _healthcheckBaseUrl _staticDir
   where
     settings = setHost _host . setPort _port $ defaultSettings
 
 main :: IO ()
 main = do
+  riemannClient <- Riemann.tcpClient "127.0.0.1" 5555
+  Riemann.sendEvent riemannClient $
+    Riemann.ok "testnet-healthcheck" & Riemann.description "Startup"
   command <-
     customExecParser
       (prefs disambiguate)
       (info (helper <*> versionOption <*> commandParser) idm)
-  runStderrLoggingT $ runCommand command
+  runStderrLoggingT $ runCommand riemannClient command
