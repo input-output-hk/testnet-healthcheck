@@ -33992,7 +33992,7 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            license = stdenv.lib.licenses.bsd2;
          }) {};
       "testnet-healthcheck" = callPackage
-        ({ mkDerivation, aeson, base, broadcast-chan, data-default-class, ekg, gitrev, lens
+        ({ mkDerivation, aeson, base, broadcast-chan, data-default-class, ekg, gitrev, hspec, hspec-core, lens
          , lens-aeson, monad-logger, mtl, optparse-applicative, servant
          , servant-client, servant-server, servant-websockets, stdenv, text
          , transformers, wai, wai-cors, wai-extra, warp, websockets
@@ -34014,6 +34014,9 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
              mtl optparse-applicative servant servant-client servant-server
              servant-websockets text transformers wai wai-cors wai-extra warp
              websockets
+           ];
+           testHaskellDepends = [
+             hspec hspec-core
            ];
            doHaddock = false;
            doCheck = true;
