@@ -34016,7 +34016,7 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
              websockets
            ];
            doHaddock = false;
-           doCheck = false;
+           doCheck = true;
            homepage = "https://github.com/input-output-hk/testnet-healthcheck#readme";
            license = stdenv.lib.licenses.bsd3;
          }) {};
