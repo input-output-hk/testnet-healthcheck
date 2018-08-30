@@ -45,6 +45,7 @@ let pkgs = import nixpkgs {};
     mkTestnetHealthcheckJob = { name, description, testnetHealthcheckBranch }:
       mkJob {
         inherit name description;
+        nixexprinput = "testnetHealthcheckSrc";
         nixexprpath = "jobsets/release-testnet-healthcheck.nix";
         extraInputs = {
           testnetHealthcheckSrc = mkGitSrc {
