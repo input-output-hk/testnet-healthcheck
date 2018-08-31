@@ -12,6 +12,7 @@ import Data.Function ((&))
 import Data.Monoid ((<>))
 import qualified Data.Text as Text
 import Development.GitRev (gitHash)
+import Network (HostName)
 import qualified Network.Monitoring.Riemann.Client as Riemann
 import qualified Network.Monitoring.Riemann.Event as Riemann
 import qualified Network.Monitoring.Riemann.TCPClient as Riemann
@@ -45,6 +46,7 @@ import Options.Applicative
   , strOption
   , value
   )
+import qualified Riemann
 import Servant.Client (BaseUrl, parseBaseUrl)
 import qualified System.Remote.Monitoring as EKG
 import UnliftIO (MonadUnliftIO)
@@ -53,6 +55,7 @@ import qualified Webserver
 data Command = RunWebserver
   { _host :: HostPreference
   , _port :: Int
+  , _riemannHost :: HostName
   , _healthcheckBaseUrl :: BaseUrl
   , _ekgPort :: Maybe Int
   , _staticDir :: FilePath
@@ -73,6 +76,10 @@ commandParser = do
       auto
       (short 'p' <> long "port" <> help "Webserver port number" <> showDefault <>
        value 8080)
+  _riemannHost <-
+    strOption
+      (short 'r' <> long "riemann" <> help "Reimann host" <> showDefault <>
+       value "localhost")
   _healthcheckBaseUrl <-
     option
       (maybeReader parseBaseUrl :: ReadM BaseUrl)
@@ -86,14 +93,13 @@ commandParser = do
     argument str (metavar "STATIC_DIR" <> help "Static directory to serve up")
   pure RunWebserver {..}
 
-runCommand ::
-     (MonadUnliftIO m, MonadLogger m, Riemann.Client m client)
-  => client
-  -> Command
-  -> m ()
-runCommand riemannClient RunWebserver {..} = do
+runCommand :: (MonadUnliftIO m, MonadLogger m) => Command -> m ()
+runCommand RunWebserver {..} = do
   _ :: Maybe EKG.Server <-
     traverse (liftIO . EKG.forkServer "localhost") _ekgPort
+  riemannClient <- liftIO $ Riemann.tcpClient _riemannHost 5555
+  Riemann.sendEvent riemannClient $
+    Riemann.ok Riemann.service & Riemann.description "Startup"
   logInfoN . Text.pack $ "Running on " <> show _host <> ":" <> show _port
   Webserver.run settings riemannClient _healthcheckBaseUrl _staticDir
   where
@@ -101,11 +107,8 @@ runCommand riemannClient RunWebserver {..} = do
 
 main :: IO ()
 main = do
-  riemannClient <- Riemann.tcpClient "127.0.0.1" 5555
-  Riemann.sendEvent riemannClient $
-    Riemann.ok "testnet-healthcheck" & Riemann.description "Startup"
   command <-
     customExecParser
       (prefs disambiguate)
       (info (helper <*> versionOption <*> commandParser) idm)
-  runStderrLoggingT $ runCommand riemannClient command
+  runStderrLoggingT $ runCommand command

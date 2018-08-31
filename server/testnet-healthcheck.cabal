@@ -41,6 +41,7 @@ library
     , lens-aeson
     , monad-logger
     , mtl
+    , network
     , optparse-applicative
     , servant
     , servant-client
@@ -79,6 +80,7 @@ executable testnet-healthcheck
     , lens-aeson
     , monad-logger
     , mtl
+    , network
     , optparse-applicative
     , servant
     , servant-client

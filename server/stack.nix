@@ -35890,7 +35890,7 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
       "testnet-healthcheck" = callPackage
         ({ mkDerivation, aeson, base, broadcast-chan, bytestring
          , containers, data-default-class, ekg, gitrev, hriemann, hspec, hspec-core
-         , http-client, http-client-tls, lens, lens-aeson, monad-logger, mtl
+         , http-client, http-client-tls, lens, lens-aeson, monad-logger, mtl, network
          , optparse-applicative, servant, servant-client, servant-server
          , servant-websockets, stdenv, stm, text, time, transformers
          , unliftio, vector, wai, wai-cors, wai-extra, warp, websockets
@@ -35904,13 +35904,13 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            libraryHaskellDepends = [
              aeson base broadcast-chan bytestring containers data-default-class
              ekg gitrev hriemann http-client http-client-tls lens lens-aeson
-             monad-logger mtl optparse-applicative servant servant-client
+             monad-logger mtl network optparse-applicative servant servant-client
              servant-server servant-websockets stm text time transformers
              unliftio vector wai wai-cors wai-extra warp websockets
            ];
            executableHaskellDepends = [
              aeson base broadcast-chan containers data-default-class ekg gitrev
-             hriemann lens lens-aeson monad-logger mtl optparse-applicative
+             hriemann lens lens-aeson monad-logger mtl network optparse-applicative
              servant servant-client servant-server servant-websockets text
              transformers unliftio wai wai-cors wai-extra warp websockets
            ];
