@@ -97,10 +97,10 @@ runCommand :: (MonadUnliftIO m, MonadLogger m) => Command -> m ()
 runCommand RunWebserver {..} = do
   _ :: Maybe EKG.Server <-
     traverse (liftIO . EKG.forkServer "localhost") _ekgPort
+  logInfoN . Text.pack $ "Running on " <> show _host <> ":" <> show _port
   riemannClient <- liftIO $ Riemann.tcpClient _riemannHost 5555
   Riemann.sendEvent riemannClient $
     Riemann.ok Riemann.service & Riemann.description "Startup"
-  logInfoN . Text.pack $ "Running on " <> show _host <> ":" <> show _port
   Webserver.run settings riemannClient _healthcheckBaseUrl _staticDir
   where
     settings = setHost _host . setPort _port $ defaultSettings
@@ -111,4 +111,6 @@ main = do
     customExecParser
       (prefs disambiguate)
       (info (helper <*> versionOption <*> commandParser) idm)
-  runStderrLoggingT $ runCommand command
+  runStderrLoggingT $ do
+    logInfoN $ "Running: " <> Text.pack (show command)
+    runCommand command
