@@ -35899,8 +35899,10 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
            pname = "testnet-healthcheck";
            version = "0.1.0.0";
            src = testnetHealthcheckSrc;
+           prePatch = "cd server";
            isLibrary = true;
            isExecutable = true;
+           buildTools = [ pkgs.git ];
            libraryHaskellDepends = [
              aeson base broadcast-chan bytestring containers data-default-class
              ekg gitrev hriemann http-client http-client-tls lens lens-aeson

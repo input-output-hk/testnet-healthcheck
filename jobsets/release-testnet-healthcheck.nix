@@ -1,13 +1,13 @@
 { nixpkgs ? <nixpkgs>
-, testnetHealthcheckSrc ? ../.
+, testnetHealthcheckSrc ? ./..
 }:
 let pkgs = import nixpkgs {};
 in {
   testnetHealthcheckClient = pkgs.callPackage ../client {
-    testnetHealthcheckSrc = builtins.toPath (testnetHealthcheckSrc + "/client");
+    inherit testnetHealthcheckSrc;
   };
 
   testnetHealthcheckServer = pkgs.callPackage ../server {
-    testnetHealthcheckSrc = builtins.toPath (testnetHealthcheckSrc + "/server");
+    inherit testnetHealthcheckSrc;
   };
 }

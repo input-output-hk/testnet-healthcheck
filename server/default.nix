@@ -1,5 +1,5 @@
 { pkgs ? import (fetchTarball https://github.com/NixOS/nixpkgs/archive/release-18.03.tar.gz) {}
-, testnetHealthcheckSrc ? ./.
+, testnetHealthcheckSrc ? ./..
 }:
 
 (import ./stack.nix {

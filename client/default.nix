@@ -1,5 +1,5 @@
 { pkgs ? import <nixpkgs> {}
-, testnetHealthcheckSrc ? ./.
+, testnetHealthcheckSrc ? ./..
 }:
 
 pkgs.stdenv.mkDerivation {
@@ -9,6 +9,7 @@ pkgs.stdenv.mkDerivation {
 
   configurePhase = ''
     export HOME="$NIX_BUILD_TOP"
+    cd client
     elm package install --yes
   '';
 
