@@ -7,8 +7,8 @@ import Control.Lens ((^..), (^?), _Right, asIndex, ifolded)
 import Data.Aeson (eitherDecode')
 import qualified Data.ByteString.Lazy as LBS
 import Data.Either (isRight)
-import Test.Hspec (Spec, describe, it, shouldBe, shouldSatisfy)
 import Healthcheck (HealthcheckResponse)
+import Test.Hspec (Spec, describe, it, shouldBe, shouldSatisfy)
 
 spec :: Spec
 spec =
