@@ -9,9 +9,9 @@ let pkgs = import nixpkgs {};
 
     testnetHealthcheckPrs = builtins.fromJSON (builtins.readFile testnetHealthcheckPrsJSON );
 
-    mkGitSrc = { repo, branch ? "refs/heads/master", leaveDotGit ? false }: {
+    mkGitSrc = { repo, branch ? "refs/heads/master" }: {
       type = "git";
-      value = repo + " " + branch + (if leaveDotGit then " leaveDotGit" else "");
+      value = repo + " " + branch + " leaveDotGit";
       emailresponsible = false;
     };
 
@@ -51,7 +51,6 @@ let pkgs = import nixpkgs {};
           testnetHealthcheckSrc = mkGitSrc {
             repo = "https://github.com/input-output-hk/testnet-healthcheck.git";
             branch = testnetHealthcheckBranch;
-            leaveDotGit = true;
           };
         };
       };
