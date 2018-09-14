@@ -139,7 +139,7 @@ run ::
   -> m ()
 run settings riemannClient healthcheckBaseUrl staticDir = do
   broadcaster <- startWatcher healthcheckBaseUrl riemannClient
-  liftIO . runSettings settings $ Webserver.app broadcaster staticDir
+  liftIO . runSettings settings $ app broadcaster staticDir
 
 middleware :: Middleware
 middleware = gzip def . logStdout . simpleCors
