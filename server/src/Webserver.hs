@@ -113,10 +113,12 @@ updateHealthcheck manager healthcheckBaseUrl riemannClient broadcaster = do
 
 toRiemannEvent :: Either ServantError HealthcheckResponse -> Riemann.Event
 toRiemannEvent (Left err) =
-  Riemann.failure Riemann.service & Riemann.description "Error fetching status" &
+  Riemann.failure Riemann.service & Riemann.version &
+  Riemann.description "Error fetching status" &
   Riemann.attributes [Riemann.attribute "ServantError" (Just (show err))]
 toRiemannEvent (Right response) =
-  Riemann.ok Riemann.service & Riemann.description "Fetched status." &
+  Riemann.ok Riemann.service & Riemann.version &
+  Riemann.description "Fetched status." &
   Riemann.attributes [Riemann.attribute "Response" (Just (show response))]
 
 logEvent :: MonadLogger m => Riemann.Event -> m ()
