@@ -18036,8 +18036,8 @@ inherit (pkgs) libjpeg; inherit (pkgs) libpng; inherit (pkgs) zlib;};
          }:
          mkDerivation {
            pname = "hriemann";
-           version = "0.3.3.0";
-           sha256 = "0apji56rwh1did67z9z0bcy5r9k2m6rrfkiv18rp4mbd863skg25";
+           version = "0.3.3.3";
+           sha256 = "0xxdzbx5wqmz62k8jka2k896sdz49j2aqivmcic9fsrar5inalyp";
            isLibrary = true;
            isExecutable = true;
            libraryHaskellDepends = [
